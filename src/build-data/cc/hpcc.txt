@@ -7,8 +7,6 @@ optimization_flags "+O2"
 warning_flags "+w"
 shared_flags "+Z"
 
-makefile_style gmake
-
 <mach_abi_linking>
 hppa1.0 -> "+DAportable"
 hppa1.1 -> "+DA1.1"

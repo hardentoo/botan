@@ -25,8 +25,6 @@ sanitizer_flags "-D_GLIBCXX_DEBUG -fsanitize=address"
 visibility_build_flags "-fvisibility=hidden"
 visibility_attribute '__attribute__((visibility("default")))'
 
-makefile_style gmake
-
 <so_link_commands>
 # The default works for GNU ld and several other Unix linkers
 default       -> "$(CXX) -shared -fPIC -Wl,-soname,$(SONAME_ABI)"

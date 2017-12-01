@@ -5,8 +5,6 @@ binary_name pgCC
 optimization_flags "-fast -Minline"
 shared_flags "-fPIC"
 
-makefile_style gmake
-
 <so_link_commands>
 linux   -> "$(CXX) -shared -fPIC -Wl,-soname,$(SONAME_ABI)"
 solaris -> "$(CXX) -G -fPIC -Wl,-h,$(SONAME_ABI)"

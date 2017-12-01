@@ -19,8 +19,6 @@ stack_protector_flags "-fstack-protector"
 visibility_build_flags "-fvisibility=hidden"
 visibility_attribute '__attribute__((visibility("default")))'
 
-makefile_style gmake
-
 <so_link_commands>
 darwin        -> "$(CXX) -dynamiclib -fPIC -install_name $(INSTALLED_LIB_DIR)/$(SONAME_ABI) -current_version $(DARWIN_CURRENT_VER) -compatibility_version $(DARWIN_COMPATIBILITY_VER)"
 
