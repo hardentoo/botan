@@ -1899,7 +1899,8 @@ class MakefileListsGenerator(object):
             includes += ' ' + self._cc.add_include_dir_option + self._options.with_external_includedir
 
         is_fuzzer = obj_dir.find('fuzzer') != -1
-        fuzzer_link = '' if self._options.fuzzer_lib is None else '%s%s' % (self._cc.add_lib_option, self._options.fuzzer_lib)
+        fuzzer_link = '' if self._options.fuzzer_lib is None \
+                      else '%s%s' % (self._cc.add_lib_option, self._options.fuzzer_lib)
 
         for (obj_file, src) in zip(objects, sources):
             isa_specific_flags_str = "".join([" %s" % flagset for flagset in sorted(self._isa_specific_flags(src))])
