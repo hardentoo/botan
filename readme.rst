@@ -40,6 +40,7 @@ For all the details on building the library, read the
   $ ./configure.py --help
   $ ./configure.py [probably some options]
   $ make
+  $ export LD_LIBRARY_PATH=.
   $ ./botan-test
   # lots of output...
   Tests all ok

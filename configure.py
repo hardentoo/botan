@@ -2175,17 +2175,6 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
 
     variables['lib_link_cmd'] = variables['lib_link_cmd'].format(**variables)
 
-    if options.os == 'darwin' and options.build_shared_lib:
-        # In order that these executables work from the build directory,
-        # we need to change the install names
-        variables['cli_post_link_cmd'] = \
-            'install_name_tool -change "$(INSTALLED_LIB_DIR)/$(SONAME_ABI)" "@executable_path/$(SONAME_ABI)" $(CLI)'
-        variables['test_post_link_cmd'] = \
-            'install_name_tool -change "$(INSTALLED_LIB_DIR)/$(SONAME_ABI)" "@executable_path/$(SONAME_ABI)" $(TEST)'
-    else:
-        variables['cli_post_link_cmd'] = ''
-        variables['test_post_link_cmd'] = ''
-
     variables.update(MakefileListsGenerator(build_config, options, modules, cc, arch, osinfo).generate())
 
     if options.os == 'windows':

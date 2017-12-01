@@ -226,20 +226,6 @@ def main(args):
     copy_executable(os.path.join(out_dir, app_exe),
                     prepend_destdir(os.path.join(bin_dir, app_exe)))
 
-    # On Darwin, if we are using shared libraries and we install, we should fix
-    # up the library name, otherwise the botan command won't work; ironically
-    # we only need to do this because we previously changed it from a setting
-    # that would be correct for installation to one that lets us run it from
-    # the build directory
-    if target_os == 'darwin' and build_shared_lib:
-        soname_abi = process_template('%{soname_abi}')
-
-        subprocess.check_call(['install_name_tool',
-                               '-change',
-                               os.path.join('@executable_path', soname_abi),
-                               os.path.join(lib_dir, soname_abi),
-                               os.path.join(bin_dir, app_exe)])
-
     if 'botan_pkgconfig' in cfg:
         pkgconfig_dir = os.path.join(options.prefix, options.libdir, options.pkgconfigdir)
         makedirs(prepend_destdir(pkgconfig_dir))

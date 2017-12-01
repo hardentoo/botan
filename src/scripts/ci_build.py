@@ -206,6 +206,7 @@ def run_cmd(cmd, root_dir):
     cmd = [os.path.expandvars(elem) for elem in cmd]
     sub_env = os.environ.copy()
     sub_env['LD_LIBRARY_PATH'] = root_dir
+    sub_env['DYLD_LIBRARY_PATH'] = root_dir
 
     redirect_stdout = None
     if len(cmd) > 3 and cmd[-2] == '>':
