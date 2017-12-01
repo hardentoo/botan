@@ -1980,7 +1980,7 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
         return '\n'.join(['#define BOTAN_' + macro for macro in macros])
 
     def external_link_cmd():
-        return ' ' + cc.add_lib_dir_option + options.with_external_libdir if options.with_external_libdir else ''
+        return (' ' + cc.add_lib_dir_option + options.with_external_libdir) if options.with_external_libdir else ''
 
     def link_to(module_member_name):
         """
@@ -2023,8 +2023,6 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
         main_executable = os.path.basename(sys.argv[0])
         return ' '.join([main_executable] + sys.argv[1:])
 
-    exe_link_cmd = cc.binary_link_command_for(osinfo.basename, options) + external_link_cmd()
-
     variables = {
         'version_major':  Version.major(),
         'version_minor':  Version.minor(),
@@ -2033,11 +2031,13 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
         'abi_rev':        Version.so_rev(),
 
         'version':        Version.as_string(),
-        'version_packed': Version.packed(),
         'release_type':   Version.release_type(),
         'version_datestamp': Version.datestamp(),
 
         'distribution_info': options.distribution_info,
+
+        'darwin_so_compat_ver': '%s.%s.0' % (Version.packed(), Version.so_rev()),
+        'darwin_so_current_ver': '%s.%s.%s' % (Version.packed(), Version.so_rev(), Version.patch()),
 
         'base_dir': source_paths.base_dir,
         'src_dir': source_paths.src_dir,
@@ -2103,7 +2103,7 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
         'visibility_attribute': cc.gen_visibility_attribute(options),
 
         'lib_link_cmd': cc.so_link_command_for(osinfo.basename, options) + external_link_cmd(),
-        'exe_link_cmd': exe_link_cmd,
+        'exe_link_cmd': cc.binary_link_command_for(osinfo.basename, options) + external_link_cmd(),
 
         'link_to': ' '.join(
             [cc.add_lib_option + lib for lib in link_to('libs')] +
@@ -2172,6 +2172,8 @@ def create_template_vars(source_paths, build_config, options, modules, cc, arch,
 
         if osinfo.soname_pattern_patch != None:
             variables['soname_patch'] = osinfo.soname_pattern_patch.format(**variables)
+
+    variables['lib_link_cmd'] = variables['lib_link_cmd'].format(**variables)
 
     if options.os == 'darwin' and options.build_shared_lib:
         # In order that these executables work from the build directory,
@@ -3043,7 +3045,9 @@ def canonicalize_options(options, info_os, info_arch):
     else:
         raise UserError('Unknown or unidentifiable processor "%s"' % (options.cpu))
 
-    if options.build_shared_lib and not info_os[options.os].building_shared_supported:
+    shared_libs_supported = options.os in info_os and info_os[options.os].building_shared_supported
+
+    if options.build_shared_lib and not shared_libs_supported:
         logging.warning('Shared libs not supported on %s, disabling shared lib support' % (options.os))
         options.build_shared_lib = False
 
@@ -3054,7 +3058,7 @@ def canonicalize_options(options, info_os, info_arch):
         if options.os == 'windows' and options.build_static_lib:
             pass
         else:
-            options.build_shared_lib = info_os[options.os].building_shared_supported
+            options.build_shared_lib = shared_libs_supported
 
     if options.build_static_lib is None:
         if options.os == 'windows' and options.build_shared_lib:
@@ -3128,8 +3132,8 @@ def validate_options(options, info_os, info_cc, available_module_policies):
             raise UserError('Using --with-sphinx plus --without-documentation makes no sense')
 
     # Warnings
-    if options.os == 'windows' and options.compiler == 'gcc':
-        logging.warning('Detected GCC on Windows; use --os=cygwin or --os=mingw?')
+    if options.os == 'windows' and options.compiler != 'msvc':
+        logging.warning('The windows target is oriented towards MSVC; maybe you want cygwin or mingw')
 
 def prepare_configure_build(info_modules, source_paths, options,
                             cc, cc_min_version, arch, osinfo, module_policy):
@@ -3310,10 +3314,6 @@ def main(argv):
 
     logging.info('Target is %s:%s-%s-%s-%s' % (
         options.compiler, cc_min_version, options.os, options.arch, options.cpu))
-
-    if options.build_shared_lib and not osinfo.building_shared_supported:
-        logging.warning('Shared libs not supported on %s, disabling shared lib support' % (osinfo.basename))
-        options.build_shared_lib = False
 
     main_action_configure_build(info_modules, source_paths, options,
                                 cc, cc_min_version, arch, osinfo, module_policy)

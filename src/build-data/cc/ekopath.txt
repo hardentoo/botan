@@ -13,7 +13,7 @@ ar_options "-ar -o"
 shared_flags "-fPIC"
 
 <so_link_commands>
-default -> "$(CXX) -shared -fPIC -Wl,-soname,$(SONAME_ABI)"
+default -> "$(CXX) -shared -fPIC -Wl,-soname,{soname_abi}"
 </so_link_commands>
 
 <mach_opt>

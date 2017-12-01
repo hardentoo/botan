@@ -21,5 +21,5 @@ westmere  -> "-march=core2"
 </mach_opt>
 
 <so_link_commands>
-default -> "$(CXX) -fPIC -shared -Wl,-soname,$(SONAME_ABI)"
+default -> "$(CXX) -fPIC -shared -Wl,-soname,{soname_abi}"
 </so_link_commands>
